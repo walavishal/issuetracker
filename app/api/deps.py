@@ -2,6 +2,9 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 
+from fastapi import Query
+from app.schemas.common import PaginationParams
+
 from app.db.session import SessionLocal
 from app.core.security import decode_access_token
 from app.services.user_service import get_user_by_email
@@ -49,3 +52,11 @@ def get_current_user(
         )
 
     return user
+
+
+
+def get_pagination(
+    limit: int = Query(10, ge=1, le=100),
+    offset: int = Query(0, ge=0)
+):
+    return PaginationParams(limit=limit, offset=offset)
