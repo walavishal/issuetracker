@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.api.v1.endpoints import auth,user,project,issue
+from app.api.v1.endpoints import auth,user,project,issue, comment
 
 api_router = APIRouter()
 
@@ -26,5 +26,11 @@ api_router.include_router(
     issue.router,
     prefix="/issues", 
     tags=["Issues"]
+)
+
+api_router.include_router(
+    comment.router,
+    prefix="/comments", 
+    tags=["Comments"]
 )
 
