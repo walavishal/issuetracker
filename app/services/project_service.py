@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from app.db.models.project import Project
+from app.db.models.issue import Issue
 from fastapi import HTTPException
 
 def create_project(db: Session, user_id: int, name: str, description: str | None):
@@ -32,6 +33,10 @@ def update_project(db: Session, project: Project, data: dict):
 
 
 def delete_project(db: Session, project: Project):
+    db.query(Issue).filter(Issue.project_id == project.id).delete(
+        synchronize_session=False
+    )
+
     db.delete(project)
     db.commit()
 

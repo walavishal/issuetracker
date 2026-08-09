@@ -30,3 +30,10 @@ class IssueStatusUpdate(BaseModel):
 
 class IssueAssign(BaseModel):
     user_id: int
+
+
+class IssueSummaryRequest(BaseModel):
+    description: str
+
+class AIChatRequest(BaseModel):
+    prompt: str

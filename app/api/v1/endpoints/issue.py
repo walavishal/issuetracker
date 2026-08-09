@@ -9,9 +9,59 @@ from app.schemas.common import PaginationParams
 from app.services.issue_service import *
 from app.utils.response import success_response, error_response
 from app.db.models.user import User
+from app.services.ai_service import generate_issue_summary
+from app.schemas.issue import IssueSummaryRequest
+from app.schemas.issue import AIChatRequest
+from app.services.ai_service import ai_agent
 
 router = APIRouter()
 
+
+@router.post("/ai-agent")
+def ai_agent_api(
+    payload: AIChatRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    try:
+
+        result = ai_agent(
+            db=db,
+            user_prompt=payload.prompt,
+            current_user=current_user,
+        )
+
+        return success_response(
+            message="AI response generated",
+            data=result
+        )
+    
+    except ValueError as e:
+        return error_response(
+            message=str(e),
+            status_code=400
+        )
+    
+    except Exception as e:
+        return error_response("Something went wrong", 500)
+
+@router.post("/ai-issue-summarize")
+def issue_summarize_api(payload: IssueSummaryRequest,
+                        current_user: User = Depends(get_current_user)):
+    try:
+        result = generate_issue_summary(payload.description)
+        return success_response(
+            message="Issue summarized successfully",
+            data=result.model_dump()
+        )
+    except ValueError as e:
+        return error_response(
+            message=str(e),
+            status_code=400
+        )
+    
+    except Exception as e:
+        return error_response("Something went wrong", 500)
 
 @router.post("/{project_id}")
 def create_issue_api(
